@@ -17,6 +17,7 @@ int main(void) {
   int value = -1;
 
   put(ht, key, value);
+  put(ht, 1, -2);
   /**
   int num_values = 1;
 
@@ -24,7 +25,7 @@ int main(void) {
 
   int* num_results = NULL;
 
-  /get(ht, key, values, num_values, num_results);
+  get(ht, key, values, num_values, num_results);
   if ((*num_results) > num_values) {
     values = realloc(values, (*num_results) * sizeof(valType));
     get(ht, 0, values, num_values, num_results);
