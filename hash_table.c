@@ -40,7 +40,6 @@ int put(hashtable* ht, keyType key, valType value) {
     // Use our hash function here to determine which index the value should be placed
     int slot = key % ht->size;
 
-    // Need to allocate memory for this node before declaring it STUPID ASS PYTHON ASS USER
     // Create a new node for the value
     struct node *newNode = malloc(sizeof(struct node));
     newNode->key = key;
@@ -73,38 +72,45 @@ int put(hashtable* ht, keyType key, valType value) {
 // to get values that it missed during the first call. 
 // This method returns an error code, 0 for success and -1 otherwise (e.g., if the hashtable is not allocated).
 int get(hashtable* ht, keyType key, valType *values, int num_values, int* num_results) {
-    (void) ht;
-    (void) key;
-    (void) values;
-    (void) num_values;
-    (void) num_results;
+  int slot = key % sizeof(ht);
+  
+  struct node *entry = ht->entries[slot];
 
-    int slot = key % sizeof(ht);
+  if(entry == NULL){
+    printf("There are no matching hashed keys");
+    return -1;
+  }
 
-    struct node *entry = ht->entries[slot];
+  // Allocate the num_results, as just a NULL pointer was passed  
+  if((num_results = malloc(sizeof(int))) == NULL){
+    return -1;
+  }
+  // Start it at 0 so that it cxan be incremented as we check
+  (*num_results) = 0;
+  
+   
+  //int* num_results = 0;
+  printf("num_results: %d\n", (*num_results));
 
-    if(entry == NULL){
-      printf("There are no matching hashed keys");
-      return -1;
-    }
-
-    while(entry != NULL){
-      if(entry->key == key){
-        printf("Found it here");
-        
+  int temp = num_values;
+  while(entry != NULL){
+    if(entry->key == key){
+      ++(*num_results);
+      if(temp != 0){
+        values[num_values-temp] = entry->value;
+        --temp;
       }
     }
+    entry = entry->next;
+  }
+  printf("num_results: %d\n", (*num_results));
 
-
-    return 0;
+  return 0;
 }
 
 // This method erases all key-value pairs with a given key from the hash table.
 // It returns an error code, 0 for success and -1 otherwise (e.g., if the hashtable is not allocated).
 int erase(hashtable* ht, keyType key) {
-    (void) ht;
-    (void) key;
-
     int slot = key % sizeof(ht);
 
     if (ht->entries [slot] == NULL) {
@@ -116,9 +122,10 @@ int erase(hashtable* ht, keyType key) {
       while(secondNode->next != NULL){
         if (secondNode->key == key) {
           firstNode->next = secondNode->next;
+          // Deallocate the secondNode here somehow
+          free(secondNode);
+          secondNode = firstNode->next->next;
         }
-        // Deallocate the secondNode here somehow
-        free(secondNode);
       }
     }
     return 0;
