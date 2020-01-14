@@ -36,27 +36,31 @@ int main(void) {
   }
 
   
-  int num_values = 1;
+  int num_values = 2;
 
   valType* values = malloc(1 * sizeof(valType));
 
-  int* num_results = NULL;
+  //int* num_results = NULL;
+  // Above caused undefined behavior upon return
+  int num_results = 0;
 
-  get(ht, key, values, num_values, num_results);
-  printf("num_results: %d\n", (*num_results));
-  if ((*num_results) > num_values) {
-    values = realloc(values, (*num_results) * sizeof(valType));
-    get(ht, 0, values, num_values, num_results);
+
+  //get(ht, key, values, num_values, num_results);
+  // Changed to pass the data here & the pointers in the following
+  get(ht, key, values, num_values, &num_results);
+  printf("num_results: %d\n", num_results);
+  if ((num_results) > num_values) {
+    values = realloc(values, (num_results) * sizeof(valType));
+    get(ht, 0, values, num_values, &num_results);
   }
 
-  for (int i = 0; i < (*num_results); i++) {
+  for (int i = 0; i < (num_results); i++) {
     printf("value of %d is %d \n", i, values[i]);
   }
   free(values);
   
   erase(ht, 0);
 
-  deallocate(ht);
-  
+//  deallocate(ht);
   return 0;
 }

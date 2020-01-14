@@ -72,7 +72,7 @@ int put(hashtable* ht, keyType key, valType value) {
 // to get values that it missed during the first call. 
 // This method returns an error code, 0 for success and -1 otherwise (e.g., if the hashtable is not allocated).
 int get(hashtable* ht, keyType key, valType *values, int num_values, int* num_results) {
-  int slot = key % sizeof(ht);
+  int slot = key % ht->size;
   
   struct node *entry = ht->entries[slot];
 
@@ -81,15 +81,15 @@ int get(hashtable* ht, keyType key, valType *values, int num_values, int* num_re
     return -1;
   }
 
+  // No longer need this now that I am delcaring the varable in the main
   // Allocate the num_results, as just a NULL pointer was passed  
-  if((num_results = malloc(sizeof(int))) == NULL){
-    return -1;
-  }
+  //if((num_results = malloc(sizeof(int))) == NULL){
+  //  return -1;
+  //}
   // Start it at 0 so that it cxan be incremented as we check
   (*num_results) = 0;
   
    
-  //int* num_results = 0;
   printf("num_results: %d\n", (*num_results));
 
   int temp = num_values;
@@ -111,16 +111,16 @@ int get(hashtable* ht, keyType key, valType *values, int num_values, int* num_re
 // This method erases all key-value pairs with a given key from the hash table.
 // It returns an error code, 0 for success and -1 otherwise (e.g., if the hashtable is not allocated).
 int erase(hashtable* ht, keyType key) {
-    int slot = key % sizeof(ht);
+    int slot = key % ht->size;
 
     if (ht->entries [slot] == NULL) {
       return -1;
     }
     else {
-      struct node *firstNode = ht->entries[slot];
-      struct node *secondNode = firstNode->next;
-      while(secondNode->next != NULL){
-        if (secondNode->key == key) {
+      struct node *tempNode = ht->entries[slot];
+      struct node *previousNode = tempNode;
+      while(tempNode->next != NULL){
+        if (tempNode->key == key) {
           firstNode->next = secondNode->next;
           // Deallocate the secondNode here somehow
           free(secondNode);
@@ -137,7 +137,7 @@ int deallocate(hashtable* ht) {
     // This line tells the compiler that we know we haven't used the variable
     // yet so don't issue a warning. You should remove this line once you use
     // the parameter.
-    (void) ht;
+
     free(ht);
     return 0;
 }
