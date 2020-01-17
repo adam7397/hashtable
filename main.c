@@ -20,22 +20,8 @@ int main(void) {
   put(ht, 0, 2);
   put(ht, 1, -2);
   
-  printf("Showing what is currently in the hashtable\n");
-  for(int i = 0; i < size -1; ++i){
-    node *temp = ht->entries[i];
-    if(temp != NULL){
-      printf("slot: %d, key: %d, value: %d\n",i,temp->key,temp->value);
-      while(temp->next != NULL){
-        temp = temp->next;
-        printf("slot: %d, key: %d, value: %d\n",i,temp->key,temp->value);
-      }
-    }
-    else{
-      printf("slot: %d is empty\n", i);
-    }
-  }
+  print(ht);
 
-  
   int num_values = 2;
 
   valType* values = malloc(1 * sizeof(valType));
@@ -61,6 +47,8 @@ int main(void) {
   
   erase(ht, 0);
 
-//  deallocate(ht);
+  print(ht);
+
+  deallocate(ht);
   return 0;
 }

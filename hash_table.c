@@ -78,7 +78,7 @@ int get(hashtable* ht, keyType key, valType *values, int num_values, int* num_re
 
   if(entry == NULL){
     printf("There are no matching hashed keys");
-    return -1;
+    return 0;
   }
 
   // No longer need this now that I am delcaring the varable in the main
@@ -111,24 +111,34 @@ int get(hashtable* ht, keyType key, valType *values, int num_values, int* num_re
 // This method erases all key-value pairs with a given key from the hash table.
 // It returns an error code, 0 for success and -1 otherwise (e.g., if the hashtable is not allocated).
 int erase(hashtable* ht, keyType key) {
-    int slot = key % ht->size;
-
-    if (ht->entries [slot] == NULL) {
-      return -1;
+  int slot = key % ht->size;
+  
+  struct node *tempNode = ht->entries[slot];
+  struct node *previousNode = tempNode;
+  while (tempNode != NULL && tempNode->key == key){
+    ht->entries[slot] = tempNode->next;
+    free(tempNode);
+    tempNode = ht->entries[slot];
+  }
+  
+  while(tempNode != NULL){
+    while (tempNode != NULL && tempNode->key != key){
+      previousNode = tempNode;
+      tempNode = tempNode->next;
     }
-    else {
-      struct node *tempNode = ht->entries[slot];
-      struct node *previousNode = tempNode;
-      while(tempNode->next != NULL){
-        if (tempNode->key == key) {
-          firstNode->next = secondNode->next;
-          // Deallocate the secondNode here somehow
-          free(secondNode);
-          secondNode = firstNode->next->next;
-        }
-      }
+    
+    if(tempNode == NULL){
+      return 0;
     }
-    return 0;
+    
+  previousNode->next = tempNode->next;
+  
+  free(tempNode);
+  
+  tempNode = previousNode->next;
+  
+  }
+return 0;
 }
 
 // This method frees all memory occupied by the hash table.
@@ -137,7 +147,24 @@ int deallocate(hashtable* ht) {
     // This line tells the compiler that we know we haven't used the variable
     // yet so don't issue a warning. You should remove this line once you use
     // the parameter.
-
     free(ht);
     return 0;
+}
+
+int print(hashtable* ht){
+  printf("Showing what is currently in the hashtable\n");
+  for(int i = 0; i < ht->size -1; ++i){
+    node *temp = ht->entries[i];
+    if(temp != NULL){
+      printf("slot: %d, key: %d, value: %d\n",i,temp->key,temp->value);
+      while(temp->next != NULL){
+        temp = temp->next;
+        printf("slot: %d, key: %d, value: %d\n",i,temp->key,temp->value);
+      }
+    }
+    else{
+      printf("slot: %d is empty\n", i);
+    }
+  }
+  return 0;
 }

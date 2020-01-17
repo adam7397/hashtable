@@ -23,5 +23,6 @@ int put(hashtable* ht, keyType key, valType value);
 int get(hashtable* ht, keyType key, valType *values, int num_values, int* num_results);
 int erase(hashtable* ht, keyType key);
 int deallocate(hashtable* ht);
+int print(hashtable* ht);
 
 #endif
